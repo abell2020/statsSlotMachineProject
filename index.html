@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<head>
+	<title>Slot Machine</title>
+<style>
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
+a{
+	color: #283593;
+	text-decoration: none;
+}
+h3{
+	margin-top: 12px;
+}
+*{
+	margin:0px;
+}
+body{
+	background-color: #424242;
+	font-family: 'Roboto', sans-serif;
+}
+main{
+	border-radius: 5px;
+	background-color: #EF5350;
+	margin-top: 30px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 15px;
+	padding-right: 15px;
+	margin-left: calc((100% - 580px) / 2);
+	width: 550px;
+}
+section#status{
+	margin-bottom: 25px;
+	padding-top: 25px;
+	padding-bottom: 25px;
+	border-radius: 5px;
+	text-align: center;
+	background-color: #37474F;
+	color: #FFFFFF;
+	font-size: 25px;
+	font-family: 'Roboto Mono', monospace;
+}
+section#Slots{
+	border-radius: 15px;
+	background-color: #FAFAFA;
+}
+section#Gira{
+	margin-top: 25px;
+	padding-top: 25px;
+	padding-bottom: 25px;
+	border-radius: 5px;
+	text-align: center;
+	background-color: #AB47BC;
+	color: #FFFFFF;
+	font-size: 25px;
+}
+section#Gira:hover{
+	background-color: #BA68C8;
+}
+section#options{
+	margin-top: 20px;
+	padding-top: 5px;
+	border-radius: 5px;
+	background-color: #C62828;
+	color: #FFFFFF;
+}
+.option{
+	padding-left: 5px;
+}
+section#info{
+	background-color: #616161;
+	padding-left: 12px;
+	padding-bottom: 12px;
+	border-radius: 5px;
+	overflow: hidden;
+	animation-duration: 1s;
+	color: #BDBDBD;
+	margin-top: 50px;
+	margin-left: 30%;
+	margin-right: 30%;
+	display: none;
+}
+
+#slot1, #slot2, #slot3,#slot1a, #slot2a, #slot3a,#slot1c, #slot2c, #slot3c{
+	
+	margin-top: 5px;
+	margin-left: 15px;
+	margin-right: 15px;
+	background-size: 150px;
+	width: 150px;
+	height: 150px;
+}
+#slot1, #slot2, #slot3{
+border:5px solid red;
+margin:10px;
+padding:0;
+}
+.a2{
+	background-image: url("res/tiles/Orange.png");
+}
+.a1{
+	background-image: url("res/tiles/cherries.png");
+}
+.a3{
+	background-image: url("res/tiles/watermelon.png");
+}
+.a4{
+	background-image: url("res/tiles/bell.png");
+}
+.a5{
+	background-image: url("res/tiles/singlebar.png");
+}
+.a6{
+	background-image: url("res/tiles/doublebar.png");
+}
+.a7{
+	background-image: url("res/tiles/triplebar.png");
+}
+</style>
+</head>
+<html>
+<body onload="toggleAudio()">
+<main>
+	<section id="status">WELCOME!</section>
+	<section id="Slots" style="display: flex; flex-wrap: wrap;">
+		<div id="slot1a" class="a1"></div>
+		<div id="slot2a" class="a6"></div>
+		<div id="slot3a" class="a2"></div>
+		
+
+		<div id="slot1" class="a3"></div>
+		<div id="slot2" class="a4"></div>
+		<div id="slot3" class="a6"></div>
+
+		<div id="slot1c" class="a1"></div>
+		<div id="slot2c" class="a1"></div>
+		<div id="slot3c" class="a5"></div>
+	</section>
+	<section onclick="doSlot()" id="Gira">TAKE A SPIN!</section>
+	<section id="options">
+		<img src="res/icons/audioOn.png" id="audio" class="option" onclick="toggleAudio()" />
+	</section>
+</main>
+<section id="info">
+	<h3>Come si Gioca?</h3>
+	<p>Tenta la tua fortuna premendo il bottone! Il Jolly vale l'elemento mancante per vincere. Tre elementi uguali e vinici! Ma attenzione, non prendere tre Jolly o perderai!</p>
+	<h3>Licenza</h3>
+	<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licenza Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />Quest'opera è distribuita con Licenza <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribuzione - Non commerciale - Condividi allo stesso modo 4.0 Internazionale</a>.</p>
+</section>
+
+<script>
+	function shuffle(array) {
+  array.sort(() => Math.random() - 0.5);
+}
+
+var doing = false;
+var spin = [new Audio("res/sounds/spin.mp3"),new Audio("res/sounds/spin.mp3"),new Audio("res/sounds/spin.mp3"),new Audio("res/sounds/spin.mp3"),new Audio("res/sounds/spin.mp3"),new Audio("res/sounds/spin.mp3"),new Audio("res/sounds/spin.mp3")];
+var coin = [new Audio("res/sounds/coin.mp3"),new Audio("res/sounds/coin.mp3"),new Audio("res/sounds/coin.mp3")]
+var win = new Audio("res/sounds/win.mp3");
+var lose = new Audio("res/sounds/lose.mp3");
+var audio = false;
+let status = document.getElementById("status")
+var info = true;
+var wheel1 = [0,0,1,1,1,1,1,2,3,3,3,3,3,3,3,3,3,3,3,4,5,6];
+var wheel2 = [0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,4,5,6];
+var wheel3 = [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,3,4,5,6];
+var money = 200;
+shuffle(wheel1);
+shuffle(wheel2);
+shuffle(wheel3);
+cw1=0;
+cw2=0;
+cw3=0;
+function doSlot(){
+	if (doing){return null;}
+	doing = true;
+	var numChanges = randomInt(1,4)*7
+	var numeberSlot1 = numChanges+randomInt(1,7)
+	var numeberSlot2 = numChanges+2*7+randomInt(1,7)
+	var numeberSlot3 = numChanges+4*7+randomInt(1,7)
+
+	var i1 = 0;
+	var i2 = 0;
+	var i3 = 0;
+	var sound = 0
+	status.innerHTML = "SPINNING"
+	slot1 = setInterval(spin1, 40);//50
+	slot2 = setInterval(spin2, 40);
+	slot3 = setInterval(spin3, 40);
+	function spin1(){
+		i1++;
+		cw1++;
+		if(cw1>21){ cw1=0;}
+		
+		if (i1>=numeberSlot1){
+			coin[0].play()
+			clearInterval(slot1);
+			return null;
+		}
+		slotTile = document.getElementById("slot1");
+		slotTilea = document.getElementById("slot1a");
+		slotTilec = document.getElementById("slot1c");
+		slotTilea.className = "a"+(1+wheel1[(cw1>0 ? cw1-1 : 21)]);
+		slotTilec.className = "a"+(1+wheel1[(cw1<21 ? cw1+1 : 0)]);
+		//if (slotTile.className=="a7"){
+		//	slotTile.className = "a0";
+		//}
+		
+		slotTile.className = "a"+(1+wheel1[cw1]);//(parseInt(slotTile.className.substring(1))+1)
+	}
+
+	function spin2(){
+		i2++;
+		cw2++;
+		if(cw2>21){ cw2=0;}
+		if (i2>=numeberSlot2){
+			coin[1].play()
+			clearInterval(slot2);
+			return null;
+		}
+		slotTile = document.getElementById("slot2");
+		slotTilea = document.getElementById("slot2a");
+		slotTilec = document.getElementById("slot2c");
+		slotTilea.className = "a"+(1+wheel2[(cw2>0 ? cw2-1 : 21)]);
+		slotTilec.className = "a"+(1+wheel2[(cw2<21 ? cw2+1 : 0)]);
+		
+		slotTile.className = "a"+(1+wheel2[cw2]);
+		}
+	function spin3(){
+		i3++;
+		cw3++;
+		if(cw3>21){ cw3=0;}
+		if (i3>=numeberSlot3){
+			coin[2].play()
+			clearInterval(slot3);
+			testWin();
+			return null;
+		}
+		slotTile = document.getElementById("slot3");
+		slotTilea = document.getElementById("slot3a");
+		slotTilec = document.getElementById("slot3c");
+		slotTilea.className = "a"+(1+wheel3[(cw3>0 ? cw3-1 : 21)]);
+		slotTilec.className = "a"+(1+wheel3[(cw3<21 ? cw3+1 : 0)]);
+		
+		
+		sound++;
+		if (sound==spin.length){
+			sound=0;
+		}
+		spin[sound].play();
+		slotTile.className = "a"+(1+wheel3[cw3]);
+	}
+}
+
+function testWin(){
+	var slot1 = document.getElementById("slot1").className
+	var slot2 = document.getElementById("slot2").className
+	var slot3 = document.getElementById("slot3").className
+	money--;
+	 if((slot3 == "a1" && slot2 != "a1" && slot1 != "a1") || (slot1 == "a1" && slot2 != "a1" && slot3 != "a1") || (slot2 == "a1" && slot1 != "a1" && slot3 != "a1")){
+	money += 2;
+	status.innerHTML = "YOU WIN! +2    Money: "+money;
+		win.play();
+		
+	}
+	else if((slot3 == "a1" && slot2 == "a1" && slot1 != "a1") || (slot1 == "a1" && slot2 == "a1" && slot3 != "a1") || (slot2 != "a1" && slot1 == "a1" && slot3 == "a1")){
+	money += 5;
+	status.innerHTML = "YOU WIN! +5    Money: "+money;
+		win.play();
+		
+	}
+	else if((slot3 == "a1" && slot2 == "a1" && slot1 == "a1")){
+money += 10;	
+	status.innerHTML = "YOU WIN! +10    Money: "+money;
+		win.play();
+		
+	}
+	else	if((slot3 == "a2" && slot2 == "a2" && slot1 == "a2")){
+money += 15;	
+	status.innerHTML = "YOU WIN! +15    Money: "+money;
+		win.play();
+		
+	}
+	else	if((slot3 == "a3" && slot2 == "a3" && slot1 == "a3")){
+			money += 20;
+		status.innerHTML = "YOU WIN! +20    Money: "+money;
+		win.play();
+	
+	}
+	else	if((slot3 == "a4" && slot2 == "a4" && slot1 == "a4")){
+				money += 30;
+		status.innerHTML = "YOU WIN! +30    Money: "+money;
+		win.play();
+
+	}
+	
+		else if((slot3 == "a5" && slot2 == slot3 && slot1 == slot3)){
+money += 50;	
+	status.innerHTML = "YOU WIN! +50    Money: "+money;
+		win.play();
+		
+	}
+		else	if((slot3 == "a6" && slot2 == slot3 && slot1 == slot3)){
+		money += 100;
+		status.innerHTML = "YOU WIN! +100    Money: "+money;
+		win.play();
+		
+	}
+		else	if((slot3 == "a7" && slot2 == slot3 && slot1 == slot3)){
+			money += 200;
+		status.innerHTML = "YOU WIN! +200    Money: "+money;
+		win.play();
+	
+	}
+		else	if((slot3 == "a5" || slot3=="a6" || slot3=="a7") && (slot2 == "a5" || slot2=="a6" || slot2=="a7") && (slot1 == "a5" || slot1=="a6" || slot1=="a7")){
+		money += 30;
+		status.innerHTML = "YOU WIN! +30    Money: "+money;
+		win.play();
+		
+	} else{
+		status.innerHTML = "YOU LOSE :(    Money: "+money;
+		lose.play();
+		
+	}
+
+	doing = false;
+}
+
+function toggleAudio(){
+	if (!audio){
+		audio = !audio;
+		for (var x of spin){
+			x.volume = 0.5;
+		}
+		for (var x of coin){
+			x.volume = 0.5;
+		}
+		win.volume = 1.0;
+		lose.volume = 1.0;
+	}else{
+		audio = !audio;
+		for (var x of spin){
+			x.volume = 0;
+		}
+		for (var x of coin){
+			x.volume = 0;
+		}
+		win.volume = 0;
+		lose.volume = 0;
+	}
+	document.getElementById("audio").src = "res/icons/audio"+(audio?"On":"Off")+".png";
+}
+
+function randomInt(min, max){
+	return Math.floor((Math.random() * (max-min+1)) + min);
+}
+</script>
+</body>
+</html>
