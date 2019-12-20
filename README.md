@@ -1,5 +1,6 @@
 # Javascript Slot Machine
 A simple Slot Machine made in Javascript
+code forked from https://github.com/Tognee/JavascriptSlotMachine, added my own wheels and spinning stuff
 
 This was a school project, it's just a simple slot machine created using javascript.
 
